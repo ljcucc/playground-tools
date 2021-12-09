@@ -1,0 +1,109 @@
+initenv(){
+  mkdir ~/Playground
+}
+
+nplg() {
+
+  generate_date(){
+  for num in {96..122}; do
+    ch=$(printf \\$(printf '%02o' $num))
+    if [[ ! -d ~/Playground/$(date +'%d%m%Y')$ch ]]; then
+
+      mkdir ~/Playground/$(date +'%d%m%Y')$ch
+      cd ~/Playground/$(date +'%d%m%Y')$ch
+      echo created folder at $(pwd)
+      break
+
+    fi
+
+    done;
+  }
+
+  generate_date
+
+  if [[ $1 == "c" ]]; then
+
+    echo creating C playground...
+
+    touch main.c
+    touch Makefile
+    mkdir bin
+
+    tee Makefile <<EOF
+CC=gcc
+DB=gdb
+MAIN=main.c
+OUT_DIR=./bin/
+OUT=main.o
+FLAG=-g
+
+run: compile
+$(echo '\t')\$(OUT_DIR)\$(OUT)
+
+debug: compile
+$(echo '\t')\$(DB) \$(OUT_DIR)\$(OUT)
+
+compile:
+$(echo '\t')\$(CC) \$(FLAG) \$(MAIN) -o \$(OUT_DIR)\$(OUT)
+EOF
+
+
+  tee main.c <<EOF
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <math.h>
+
+void main(int argv, char** argc)
+{
+  printf("Hello World");
+  exit(0);
+}
+EOF
+
+  elif [[ $1 == "py" || $1 == "python" ]]; then
+
+    echo "creating Python playground"
+
+    touch main.py
+    tee main.py <<EOF
+def main():
+    print("Hello World")
+
+if __name__ == "__main__":
+    main()
+
+EOF
+
+  elif [[ $1 == "web" || $1 == "html" ]]; then
+    echo "creating Static Web page project (contained HTML, CSS, JS)"
+
+    mkdir css
+    mkdir src
+    touch index.html
+    touch css/style.css
+    touch src/index.js
+
+    tee index.html <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script src="./src/index.js"></script>
+</html>
+EOF
+    tee src/index.js <<EOF
+(()=>{
+  console.log("hello world");
+})();
+EOF
+  fi
+}
